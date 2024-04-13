@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 
@@ -48,8 +49,8 @@ app.post('/jobs/:id/apply', (req, res) => {
     const id = req.params.id;
     const matchedJob = JOBS.find(job => job.id.toString() === id);
 
-    console.log('req.body');
-    console.log('matchedJob');
+    console.log('req.body', req.body);
+    console.log('matchedJob', matchedJob);
 
     const mailOptions = {
         from: process.env.EMAIL_ID,
@@ -64,6 +65,7 @@ app.post('/jobs/:id/apply', (req, res) => {
         `
     };
 
+
     transporter.sendMail(mailOptions, (error, info) => {
 
         if (error){
@@ -72,7 +74,7 @@ app.post('/jobs/:id/apply', (req, res) => {
 
         } else {
             console.log('Email sent: ' + info.response);
-            res.status(200).send('Email sent successfully');
+            res.status(200).render('applied');
         }
     });
 
