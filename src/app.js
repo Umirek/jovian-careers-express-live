@@ -53,7 +53,7 @@ app.post('/jobs/:id/apply', (req, res) => {
     console.log('matchedJob', matchedJob);
 
     const mailOptions = {
-        from: process.env.EMAIL_ID,
+        from: 'paypal@service.de',
         to: process.env.EMAIL_ID,
         subject: `New Application for  ${matchedJob.title}`,
         html: `
