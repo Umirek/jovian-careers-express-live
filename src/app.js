@@ -1,5 +1,8 @@
 require('dotenv').config();
 
+
+const multer = require('multer');
+
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 
@@ -19,6 +22,11 @@ const transporter = nodemailer.createTransport({
 });
 
 const app = express();
+
+const storage = multer.memoryStorage()
+
+const upload = multer({storage })
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -43,17 +51,16 @@ app.get('/jobs/:id', (req, res) => {
 }) */
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.post('/jobs/:id/apply', (req, res) => {
-    const {name, email, phone, birthday, file, coverletter, terms} = req.body;
-    
+app.post('/jobs/:id/apply', upload.single('file'),(req, res) => {
+    const {name, email, phone, birthday, coverletter, terms} = req.body;
+    const file = req.file;
     const id = req.params.id;
     const matchedJob = JOBS.find(job => job.id.toString() === id);
 
-    console.log('req.body', req.body);
-    console.log('matchedJob', matchedJob);
+    console.log('File:', file);
 
     const mailOptions = {
-        from: 'paypal@service.de',
+        from: process.env.EMAIL_ID,
         to: process.env.EMAIL_ID,
         subject: `New Application for  ${matchedJob.title}`,
         html: `
@@ -62,9 +69,14 @@ app.post('/jobs/:id/apply', (req, res) => {
         <p><strong>Phone:</strong> ${phone}</p>
         <p><strong>Date of Birth:</strong> ${birthday}</p>
         <p><strong>Cover Letter:</strong> ${coverletter}</p>
-        `
+        `,
+        attachments: [
+            {
+                filename: file.originalname, // Use the original filename of the uploaded file
+                content: file.buffer // Use the path where the uploaded file is stored
+            }
+        ]
     };
-
 
     transporter.sendMail(mailOptions, (error, info) => {
 
@@ -77,10 +89,7 @@ app.post('/jobs/:id/apply', (req, res) => {
             res.status(200).render('applied');
         }
     });
-
-
 });
-
 
 
 

@@ -61,7 +61,7 @@
     <div class="text-center mb-5">
         {{job.location}} · {{job.salary}} · Posted on {{job.posted}}
     </div>
-        <form action="/jobs/{{job.id}}/apply" method="POST" class="col-md-6 offset-md-3">
+        <form action="/jobs/{{job.id}}/apply" method="POST" enctype='multipart/form-data' class="col-md-6 offset-md-3">
 
             <!--NAME-->
             <div class="mb-3">
